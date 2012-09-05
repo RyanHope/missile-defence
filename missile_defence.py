@@ -178,6 +178,7 @@ class MissileDefenceGame(object):
         self.buildings = Buildings(generate_city(self.resolution),
                                    self.resolution)
         self.firing = False
+        self.fixation_firing = False
         self.fire_cycle = 0
         self.shield_dome = ShieldDome(self.resolution)
         self.shield_dome.health = 2
@@ -381,10 +382,11 @@ class MissileDefenceGame(object):
             self.fix, self.samp = self.fp.processData( t, dia, x, y, ex, ey, ez )
             
             if self.fix:
-                if not self.firing:
-                    self.firing = True
+                if not self.fixation_firing and self.samp > 100:
+                    self.fixation_firing = True
+                    self.cannon.fire(self.fix)
             else:
-                self.firing = False
+                self.fixation_firing = False
 
 if __name__ == "__main__":
     
