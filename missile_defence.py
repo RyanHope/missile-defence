@@ -349,7 +349,7 @@ class MissileDefenceGame(object):
         
         self.draw()
         
-    def start( self, lc ):
+    def start( self, lc, results):
         self.lc = LoopingCall( self.refresh )
         cleanupD = self.lc.start( 1.0 / 30 )
         cleanupD.addCallbacks( self.quit )
