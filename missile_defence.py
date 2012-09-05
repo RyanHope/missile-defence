@@ -187,6 +187,9 @@ class MissileDefenceGame(object):
         self.buildings_sum = self.initial_buildings_sum
         self.score = 0
         
+        self.fix = None
+        self.samp = 0
+        
     def __init__(self, args):
         
         self.args = args
@@ -368,7 +371,6 @@ class MissileDefenceGame(object):
     if eyetrackerSupport:
         @d.listen( 'ET_SPL' )
         def iViewXEvent( self, inSender, inEvent, inResponse ):
-            print(self.inResponse)
             t = int( inResponse[0] )
             x = float( inResponse[2] )
             y = float( inResponse[4] )
@@ -377,6 +379,7 @@ class MissileDefenceGame(object):
             ez = np.mean( ( float( inResponse[14] ), float( inResponse[15] ) ) )
             dia = int( inResponse[6] ) > 0 and int( inResponse[7] ) > 0 and int( inResponse[8] ) > 0 and int( inResponse[9] ) > 0
             self.fix, self.samp = self.fp.processData( t, dia, x, y, ex, ey, ez )
+            print(self.fix, self.samp)
             if self.fix and self.samp == 1:
                 self.cannon.fire(self.fix)
 
