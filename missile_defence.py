@@ -165,6 +165,10 @@ class ShieldDome(object):
             return hit
             
 class MissileDefenceGame(object):
+    
+    if eyetrackerSupport:
+        d = Dispatcher()
+    
     def reset(self):
         self.background = background.StarryBackground(self.resolution)                       
         self.physics = Physics(self)        
