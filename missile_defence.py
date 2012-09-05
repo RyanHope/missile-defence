@@ -379,9 +379,12 @@ class MissileDefenceGame(object):
             ez = numpy.mean( ( float( inResponse[14] ), float( inResponse[15] ) ) )
             dia = int( inResponse[6] ) > 0 and int( inResponse[7] ) > 0 and int( inResponse[8] ) > 0 and int( inResponse[9] ) > 0
             self.fix, self.samp = self.fp.processData( t, dia, x, y, ex, ey, ez )
-            print(self.fix, self.samp)
-            if self.fix and self.samp == 1:
-                self.cannon.fire(self.fix)
+            
+            if self.fix:
+                if not self.firing:
+                    self.firing = True
+            else:
+                self.firing = False
 
 if __name__ == "__main__":
     
