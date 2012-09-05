@@ -10,6 +10,15 @@
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 
+import argparse
+
+try:
+    import pyviewx
+    import pyfixation
+    eyetrackerSupport = True
+except ImportError:
+    eyetrackerSupport = False
+
 import pygame
 import pygame.font
 
@@ -173,13 +182,15 @@ class MissileDefenceGame(object):
         self.buildings_sum = self.initial_buildings_sum
         self.score = 0
         
-    def __init__(self):
+    def __init__(self, args):
+        
+        self.args = args
+        
         self.buildings_colour = (0,0,10)   # blue-black
         self.auto_mode = False
         
         self.projectiles = [] 
         self.tick_count = 0
-        self.done  = False
                 
         pygame.init()
         pygame.surfarray.use_arraytype("numpy")        
@@ -214,9 +225,9 @@ class MissileDefenceGame(object):
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.done = True
+                self.quit()
             elif event.type == pygame.KEYDOWN and event.key == ord("q"):
-                self.done = True
+                self.quit()
             elif event.type == pygame.KEYDOWN and event.key == ord("s"): # screenshot
                 pygame.image.save(self.screen, "screenshot.png")
             elif event.type == pygame.KEYDOWN and event.key == ord("a"): # auto mode
@@ -326,17 +337,33 @@ class MissileDefenceGame(object):
         self.apply_physics()
         
         self.draw()
-                
-    def quit( self, lc ):
-        reactor.stop()
-                
-    def run(self):                        
+        
+    def start( self, lc ):
         self.lc = LoopingCall( self.refresh )
         cleanupD = self.lc.start( 1.0 / 30 )
         cleanupD.addCallbacks( self.quit )
+
+    def run( self ):
+        if self.args.eyetracker:
+            reactor.listenUDP( 5555, self.client )
+            self.calibrator.start( self.start )
+        else:
+            self.start( None )
+        reactor.run()
+                
+    def quit( self, lc=None ):
+        reactor.stop()
             
 
 if __name__ == "__main__":
-    game = MissileDefenceGame()
+    
+    parser = argparse.ArgumentParser( formatter_class = argparse.ArgumentDefaultsHelpFormatter )
+    if eyetrackerSupport:
+        parser.add_argument( '-e', '--eyetracker', action = "store", dest = "eyetracker", help = 'IP address of iViewX server.' )
+    args = parser.parse_args()
+
+    if not hasattr( args, 'eyetracker' ):
+        setattr( args, 'eyetracker', None )
+    
+    game = MissileDefenceGame(args)
     game.run()
-    reactor.run()
