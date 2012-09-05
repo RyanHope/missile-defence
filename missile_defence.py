@@ -374,9 +374,9 @@ class MissileDefenceGame(object):
             t = int( inResponse[0] )
             x = float( inResponse[2] )
             y = float( inResponse[4] )
-            ex = np.mean( ( float( inResponse[10] ), float( inResponse[11] ) ) )
-            ey = np.mean( ( float( inResponse[12] ), float( inResponse[13] ) ) )
-            ez = np.mean( ( float( inResponse[14] ), float( inResponse[15] ) ) )
+            ex = numpy.mean( ( float( inResponse[10] ), float( inResponse[11] ) ) )
+            ey = numpy.mean( ( float( inResponse[12] ), float( inResponse[13] ) ) )
+            ez = numpy.mean( ( float( inResponse[14] ), float( inResponse[15] ) ) )
             dia = int( inResponse[6] ) > 0 and int( inResponse[7] ) > 0 and int( inResponse[8] ) > 0 and int( inResponse[9] ) > 0
             self.fix, self.samp = self.fp.processData( t, dia, x, y, ex, ey, ez )
             print(self.fix, self.samp)
