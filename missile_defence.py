@@ -13,8 +13,9 @@ from twisted.internet.task import LoopingCall
 import argparse
 
 try:
-    import pyviewx
-    import pyfixation
+    from pyfixation import VelocityFP
+    from pyviewx import iViewXClient, Dispatcher
+    from pyviewx.pygamesupport import Calibrator
     eyetrackerSupport = True
 except ImportError:
     eyetrackerSupport = False
