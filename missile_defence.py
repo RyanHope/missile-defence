@@ -368,6 +368,7 @@ class MissileDefenceGame(object):
     if eyetrackerSupport:
         @d.listen( 'ET_SPL' )
         def iViewXEvent( self, inSender, inEvent, inResponse ):
+            print(self.inResponse)
             t = int( inResponse[0] )
             x = float( inResponse[2] )
             y = float( inResponse[4] )
@@ -375,9 +376,9 @@ class MissileDefenceGame(object):
             ey = np.mean( ( float( inResponse[12] ), float( inResponse[13] ) ) )
             ez = np.mean( ( float( inResponse[14] ), float( inResponse[15] ) ) )
             dia = int( inResponse[6] ) > 0 and int( inResponse[7] ) > 0 and int( inResponse[8] ) > 0 and int( inResponse[9] ) > 0
-            fix, samp = self.fp.processData( t, dia, x, y, ex, ey, ez )
-            if fix and samp == 1:
-                self.cannon.fire(fix)
+            self.fix, self.samp = self.fp.processData( t, dia, x, y, ex, ey, ez )
+            if self.fix and self.samp == 1:
+                self.cannon.fire(self.fix)
 
 if __name__ == "__main__":
     
