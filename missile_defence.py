@@ -191,12 +191,6 @@ class MissileDefenceGame(object):
         
         self.args = args
         
-        if self.args.eyetracker:
-            self.client = iViewXClient( self.args.eyetracker, 4444 )
-            self.client.addDispatcher( self.d )
-            self.fp = VelocityFP()
-            self.calibrator = Calibrator( self.client, self.screen, reactor = reactor )
-        
         self.buildings_colour = (0,0,10)   # blue-black
         self.auto_mode = False
         
@@ -218,6 +212,12 @@ class MissileDefenceGame(object):
         self.buildings_surface.set_colorkey(0, pygame.RLEACCEL)
         
         self.reset()
+        
+        if self.args.eyetracker:
+            self.client = iViewXClient( self.args.eyetracker, 4444 )
+            self.client.addDispatcher( self.d )
+            self.fp = VelocityFP()
+            self.calibrator = Calibrator( self.client, self.screen, reactor = reactor )
         
     def generate_missile(self):
         p = projectiles.Missile(position=(uniform(-500, self.resolution[0] + 500), -50),
