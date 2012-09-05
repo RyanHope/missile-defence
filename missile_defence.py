@@ -175,7 +175,6 @@ class MissileDefenceGame(object):
         
     def __init__(self):
         self.buildings_colour = (0,0,10)   # blue-black
-        self.resolution = (640, 480)
         self.auto_mode = False
         
         self.projectiles = [] 
@@ -187,14 +186,16 @@ class MissileDefenceGame(object):
         
 #        self.score_font = pygame.font.Font(pygame.font.get_default_font(), 20)
         self.score_font = pygame.font.Font(pygame.font.match_font("Monospace", True), 20)
-        self.reset()
         
-        self.screen = pygame.display.set_mode(self.resolution)
-#                                              pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+        surf = self.screen.get_rect()
+        self.resolution = (surf.width, surf.height)
         
         self.buildings_surface = pygame.Surface(self.resolution, 0, 8)
         self.buildings_surface.set_palette(((0,0,0), self.buildings_colour))
         self.buildings_surface.set_colorkey(0, pygame.RLEACCEL)
+        
+        self.reset()
         
     def generate_missile(self):
         p = projectiles.Missile(position=(uniform(-500, self.resolution[0] + 500), -50),
