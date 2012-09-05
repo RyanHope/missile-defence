@@ -7,6 +7,9 @@
     See LICENSE (GNU GPL version 3 or later).
 """
 
+from twisted.internet import reactor
+from twisted.internet.task import LoopingCall
+
 import pygame
 import pygame.font
 
@@ -20,7 +23,6 @@ from maths import size_squared, normalize
 
 import random
 from random import uniform
-
 
 # imports from my files
 import background
@@ -175,6 +177,10 @@ class MissileDefenceGame(object):
         self.buildings_colour = (0,0,10)   # blue-black
         self.resolution = (640, 480)
         self.auto_mode = False
+        
+        self.projectiles = [] 
+        self.tick_count = 0
+        self.done  = False
                 
         pygame.init()
         pygame.surfarray.use_arraytype("numpy")        
@@ -292,55 +298,44 @@ class MissileDefenceGame(object):
         self.buildings.apply_physics()   
         self.cannon.apply_physics()
         
-                
-    def run(self):                
-        clock = pygame.time.Clock()        
-
-        self.projectiles = [] 
-        tick_count = 0
-        self.done  = False
-
-        # Introduction
-        
-        #while tick_count < 30
-        #    clock.tick(30)
-        #    
-        #    tick_count += 1
-        #    self.apply_physics()
-        #     self.draw()
-                    
-        while not self.done:
-            clock.tick(30)
-            self.handle_events()
+    def refresh(self):
+        self.handle_events()
                         
-            tick_count += 1
+        self.tick_count += 1
 
-            if tick_count % 100 == 0:
-                self.background.darken()        
-                
-            if tick_count % 30 == 0:
-                self.buildings_sum   = self.get_buildings_sum()
-                if float(self.buildings_sum) / self.initial_buildings_sum < 0.2:
-                    self.reset()
-             
-                self.score += 100
-                           
-            # randomly add more projectiles
-            self.missile_threshold += 0.0001
+        if self.tick_count % 100 == 0:
+            self.background.darken()        
             
-            m = self.missile_threshold
-            while m > 0:
-                m -= random.random() 
-                if m > 0:
-                    self.projectiles.append(self.generate_missile())
-            
-            self.apply_physics()
-            
-            self.draw()
+        if self.tick_count % 30 == 0:
+            self.buildings_sum   = self.get_buildings_sum()
+            if float(self.buildings_sum) / self.initial_buildings_sum < 0.2:
+                self.reset()
+         
+            self.score += 100
+                       
+        # randomly add more projectiles
+        self.missile_threshold += 0.0001
         
-        pygame.quit()           
+        m = self.missile_threshold
+        while m > 0:
+            m -= random.random() 
+            if m > 0:
+                self.projectiles.append(self.generate_missile())
+        
+        self.apply_physics()
+        
+        self.draw()
+                
+    def quit( self, lc ):
+        reactor.stop()
+                
+    def run(self):                        
+        self.lc = LoopingCall( self.refresh )
+        cleanupD = self.lc.start( 1.0 / 30 )
+        cleanupD.addCallbacks( self.quit )
             
 
 if __name__ == "__main__":
     game = MissileDefenceGame()
     game.run()
+    reactor.run()
